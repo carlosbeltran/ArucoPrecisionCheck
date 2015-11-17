@@ -46,6 +46,7 @@ T = [[R,Txyz'];[0 0 0 1]];
 disto = [ -6.1688379586668375e-002, 1.6082224431333297e-001,...
        2.5879292291040206e-003, -1.1214913617323160e-004,...
        -1.2474406177802803e-001 ];
+
 cam = CentralCamera('focal',3.55,'pixel',1.63e-3, 'distorsion', disto,...
 'resolution', [3840 2748], 'centre',[1882 1453],'name','cam');
 pt_o = cam.project(Txyz');
@@ -67,7 +68,6 @@ hold;
 trplot(T,'length',0.015);
 
 % Create Plane
-
  plane = createPlane(Txyz,Tyo',Txo');
 
  %
@@ -83,7 +83,6 @@ trplot(T,'length',0.015);
  rp2 = ray.d;
  line = [rp1(1) rp1(2) rp1(3) rp2(1)-rp1(1) rp2(2)-rp1(2) rp2(3)-rp1(3)]
  drawLine3d(line,'r');
-
 
  ray = cam.ray(pt_x);
  rp1 = ray.P0;
