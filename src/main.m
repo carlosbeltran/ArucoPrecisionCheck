@@ -52,11 +52,13 @@ pt_o = cam.project(Txyz');
 scatter(pt_o(1),pt_o(2));
 
 Ty =  [ 0 0.015 0]';
-pt_y = cam.project(h2e(T*e2h(Ty)));
+Tyo = h2e(T*e2h(Ty));
+pt_y = cam.project(Tyo);
 scatter(pt_y(1),pt_y(2));
 
 Tx =  [ 0.015 0 0]';
-pt_x = cam.project(h2e(T*e2h(Tx)));
+Txo = h2e(T*e2h(Tx));
+pt_x = cam.project(Txo);
 scatter(pt_x(1),pt_x(2));
 
 figure;
@@ -65,8 +67,6 @@ hold;
 trplot(T,'length',0.015);
 
 % Create Plane
- Tyo = h2e(T*e2h(Ty));
- Txo = h2e(T*e2h(Tx));
 
  plane = createPlane(Txyz,Tyo',Txo');
 
