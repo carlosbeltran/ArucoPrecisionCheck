@@ -6,11 +6,6 @@ hold on;
 result = '10=(1852.86,1291.25) (2034.85,1277.98) (2064.17,1425.92) (1872.77,1441.03) Txyz= 0.0109797 -0.014364 0.324452 Rxyz=1.95024 1.75563 -0.52896';
 
 [id,p1,p2,p3,p4,Txyz,Rxyz] = parseArucoRT(result);
-%% 
-%%p1 = [1852.86,1291.25];
-%%p2 = [2034.85,1277.98]; 
-%%p3 = [2064.17,1425.92]; 
-%%p4 = [1872.77,1441.03];
 
 x  = [p1(1);
       p2(1);
@@ -23,8 +18,7 @@ y  = [p1(2);
 
 [markercx,markercy,a] = centroid(x,y);
 
-%Txyz = [0.0109797 -0.014364 0.324452];
-%Rxyz = [1.95024 1.75563 -0.52896];
+%%%plane = createPlane(p1,p2,p3); %% Dependency on geom3D
 
 scatter(p1(1),p1(2));
 scatter(p2(1),p2(2));
@@ -52,22 +46,46 @@ T = [[R,Txyz'];[0 0 0 1]];
 disto = [ -6.1688379586668375e-002, 1.6082224431333297e-001,...
        2.5879292291040206e-003, -1.1214913617323160e-004,...
        -1.2474406177802803e-001 ];
+
 cam = CentralCamera('focal',3.55,'pixel',1.63e-3, 'distorsion', disto,...
 'resolution', [3840 2748], 'centre',[1882 1453],'name','cam');
-pt = cam.project(Txyz');
-scatter(pt(1),pt(2));
+pt_o = cam.project(Txyz');
+scatter(pt_o(1),pt_o(2));
 
 Ty =  [ 0 0.015 0]';
-pt = cam.project(h2e(T*e2h(Ty)));
-scatter(pt(1),pt(2));
+Tyo = h2e(T*e2h(Ty));
+pt_y = cam.project(Tyo);
+scatter(pt_y(1),pt_y(2));
 
 Tx =  [ 0.015 0 0]';
-pt = cam.project(h2e(T*e2h(Tx)));
-scatter(pt(1),pt(2));
+Txo = h2e(T*e2h(Tx));
+pt_x = cam.project(Txo);
+scatter(pt_x(1),pt_x(2));
 
 figure;
 cam.plot_camera('scale',0.02);
 hold;
-trplot(T,'length',0.01);
+trplot(T,'length',0.015);
 
+% Create Plane
+ plane = createPlane(Txyz,Tyo',Txo');
 
+ %
+ %ray = cam.ray(p1');
+ ray = cam.ray(pt_o);
+ rp1 = ray.P0;
+ rp2 = ray.d;
+ line = [rp1(1) rp1(2) rp1(3) rp2(1)-rp1(1) rp2(2)-rp1(2) rp2(3)-rp1(3)]
+ drawLine3d(line);
+
+ ray = cam.ray(pt_y);
+ rp1 = ray.P0;
+ rp2 = ray.d;
+ line = [rp1(1) rp1(2) rp1(3) rp2(1)-rp1(1) rp2(2)-rp1(2) rp2(3)-rp1(3)]
+ drawLine3d(line,'r');
+
+ ray = cam.ray(pt_x);
+ rp1 = ray.P0;
+ rp2 = ray.d;
+ line = [rp1(1) rp1(2) rp1(3) rp2(1)-rp1(1) rp2(2)-rp1(2) rp2(3)-rp1(3)]
+ drawLine3d(line,'g');
