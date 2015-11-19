@@ -6,8 +6,7 @@ pos = tmph.surface{1};
 imshow(img);
 hold on;
 
-%%result = '10=(1852.86,1291.25) (2034.85,1277.98) (2064.17,1425.92) (1872.77,1441.03) Txyz= 0.0109797 -0.014364 0.324452 Rxyz=1.95024 1.75563 -0.52896';
-result1 = '10=(1802.21,1134.79) (2009.6,1124.56) (2022.07,1292.79) (1803.91,1303.69) Txyz=0.00353763 -0.0318755 0.28685 Rxyz=1.96302 1.8863 -0.579586';
+result1 = '10=(1802.21,1134.79) (2009.6,1124.56) (2022.07,1292.79) (1803.91,1303.69) Txyz=0.00758064 -0.0683045 0.614678 Rxyz=1.96302 1.8863 -0.579586';
 
 [id,p1,p2,p3,p4,Txyz,Rxyz] = parseArucoRT(result1);
 
@@ -57,12 +56,12 @@ cam = CentralCamera('focal',3.55,'pixel',1.63e-3, 'distorsion', disto,...
 pt_o = cam.project(Txyz');
 scatter(pt_o(1),pt_o(2));
 
-Ty =  [ 0 0.015 0]';
+Ty =  [ 0 0.03 0]';
 Tyo = h2e(T*e2h(Ty));
 pt_y = cam.project(Tyo);
 scatter(pt_y(1),pt_y(2));
 
-Tx =  [ 0.015 0 0]';
+Tx =  [ 0.03 0 0]';
 Txo = h2e(T*e2h(Tx));
 pt_x = cam.project(Txo);
 scatter(pt_x(1),pt_x(2));
@@ -70,7 +69,7 @@ scatter(pt_x(1),pt_x(2));
 figure;
 cam.plot_camera('scale',0.02);
 hold;
-trplot(T,'length',0.015);
+trplot(T,'length',0.03);
 
 % Create Plane
  plane = createPlane(Txyz,Tyo',Txo');
@@ -117,7 +116,8 @@ img2 = imread('../images/ArucoPrecisionSnapShots/2.tiff');
 figure;
 imshow(img2);
 hold on;
-result2 = '10=(1809.38,1041.76) (2045.52,1031.96) (2057.29,1261.25) (1817.12,1271.93) Txyz=0.00585792 -0.0356664 0.256087 Rxyz=2.19864 2.11374 -0.178318';
+%%result2 = '10=(1809.38,1041.76) (2045.52,1031.96) (2057.29,1261.25) (1817.12,1271.93) Txyz=0.00585792 -0.0356664 0.256087 Rxyz=2.19864 2.11374 -0.178318';
+result2 = '10=(1809.38,1041.76) (2045.52,1031.96) (2057.29,1261.25) (1817.12,1271.93) Txyz=0.0125527 -0.0764281 0.548758 Rxyz=2.19864 2.11374 -0.178318';
 
 [id,p1,p2,p3,p4,Txyz,Rxyz] = parseArucoRT(result2);
 theta = norm(Rxyz);
