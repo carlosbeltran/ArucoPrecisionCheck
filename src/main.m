@@ -6,7 +6,6 @@ pos = tmph.surface{1};
 imshow(img);
 hold on;
 
-%%result1 = '10=(1802.21,1134.79) (2009.6,1124.56) (2022.07,1292.79) (1803.91,1303.69) Txyz=0.00758064 -0.0683045 0.614678 Rxyz=1.96302 1.8863 -0.579586';
 [status,result1] = system('aruco_simple ../images/ArucoPrecisionSnapShots/1.tiff ../calibration/camera.yml 0.060')
 
 [id,p1,p2,p3,p4,Txyz,Rxyz] = parseArucoRT(result1);
@@ -20,37 +19,35 @@ y  = [p1(2);
       p3(2);
       p4(2);]
 
-[markercx,markercy,a] = centroid(x,y);
 
-%%%plane = createPlane(p1,p2,p3); %% Dependency on geom3D
-
+% Plot the surface boundary in the image plane
 scatter(pos(:,1),pos(:,2),'+');
+
+% Plot the marker corners in the image plane
 scatter(p1(1),p1(2));
 scatter(p2(1),p2(2));
 scatter(p3(1),p3(2));
 scatter(p4(1),p4(2));
+
+%plot the centroid in the image plane
+[markercx,markercy,a] = centroid(x,y);
 scatter(markercx,markercy);
 
-x  = [p1(1);
-      p2(1);
-      p3(1);
-      p4(1);]
-plot(x,y);
-
+% Get the tranform of the marker respect to the camera frame
 T = gethomtransform(Txyz,Rxyz);
-%theta = norm(Rxyz);
-%R = R3d(rad2deg(theta),Rxyz);
-%T = [[R,Txyz'];[0 0 0 1]];
 
+% Create the camera
 disto = [ -6.1688379586668375e-002, 1.6082224431333297e-001,...
        2.5879292291040206e-003, -1.1214913617323160e-004,...
        -1.2474406177802803e-001 ];
-
 cam = CentralCamera('focal',3.55,'pixel',1.63e-3, 'distorsion', disto,...
 'resolution', [3840 2748], 'centre',[1882 1453],'name','cam');
+
+% Reproject the center of the marker in the image plane
 pt_o = cam.project(Txyz');
 scatter(pt_o(1),pt_o(2));
 
+% Compute and plot the borders of the marker frame
 Ty =  [ 0 0.03 0]';
 Tyo = h2e(T*e2h(Ty));
 pt_y = cam.project(Tyo);
@@ -93,7 +90,7 @@ drawPoint3d(Tzo(1),Tzo(2),Tzo(3));
  line = [rp1(1) rp1(2) rp1(3) rp2(1)-rp1(1) rp2(2)-rp1(2) rp2(3)-rp1(3)]
  %drawLine3d(line,'g');
 
- % Get 3D points of the anotated boundary
+ % Get 3D points of the annotated boundary
  %
  rays = cam.ray(pos');
  pts3D = [];
@@ -102,10 +99,9 @@ drawPoint3d(Tzo(1),Tzo(2),Tzo(3));
     rp1 = rays(iray).P0;
     rp2 = rays(iray).d;
     line = [rp1(1) rp1(2) rp1(3) rp2(1)-rp1(1) rp2(2)-rp1(2) rp2(3)-rp1(3)]
-    %drawLine3d(line,'g');
     point = intersectLinePlane(line,plane);
     pts3D =[pts3D point']; 
-    drawPoint3d(point(1),point(2),point(3));
+    drawPoint3d(point(1),point(2),point(3),'+');
  end
 
 % Move to the reference frame of the first marker
@@ -122,9 +118,6 @@ hold on;
 [id,p1,p2,p3,p4,Txyz,Rxyz] = parseArucoRT(result2);
 
 T2 = gethomtransform(Txyz,Rxyz);
-%%theta = norm(Rxyz);
-%%R2 = R3d(rad2deg(theta),Rxyz);
-%%T2 = [[R2,Txyz'];[0 0 0 1]];
 
 %% Move points to the new camera position reference frame
 pts3D = h2e((T2)*e2h(pts3D));
